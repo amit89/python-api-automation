@@ -12,6 +12,7 @@ class RequestTypes:
     GET = requests.get
     POST = requests.post
     PUT = requests.put
+    DELETE = requests.delete
 
 
 class HttpSession:
@@ -36,3 +37,12 @@ class HttpSession:
 
         except RequestException as e:
             logger.log_error("While calling the endpoint encountered as error: ".format(RequestTypes, e))
+
+    @staticmethod
+    def token(endPoint, header, payload):
+        response = HttpSession.send_request(RequestTypes.POST, endPoint, header,
+                                            payload)
+        token: str = response['access_token']
+        token_val: str = "".join('Bearer ' + token)
+        logger.log_info("Token created: " + token_val)
+        return {"Authorization": token_val, "Content-Type": "application/json"}
