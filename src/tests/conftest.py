@@ -14,7 +14,7 @@ logger = CustomLogger("conftest")
 @pytest.fixture(scope="module")
 def get_token():
     response = HttpSession.send_request(RequestTypes.POST, EndPoints.token_url, Constants.token_header(),
-                                        Constants.token_payload())
+                                        Constants.empty_payload())[0]
     token: str = response['access_token']
     token_val: str = "".join('Bearer ' + token)
     logger.log_info("Token created: " + token_val)

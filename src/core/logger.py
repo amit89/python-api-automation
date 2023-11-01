@@ -2,9 +2,9 @@ import logging
 
 
 class CustomLogger:
-    _path = "/Users/amitkumar/Documents/BACKEND-PROJ/trimble-agri/results/out.txt"
+    _path = "C:\\Users\\Amit\\Documents\\Automation\\backend-dev\\python-api-automation\\results\\out.txt"
 
-    def __init__(self, logger_name, log_file=_path):
+    def __init__(self, logger_name, log_file=_path) -> None:
         self.logger = logging.getLogger(logger_name)
         self.logger.setLevel(logging.DEBUG)
 
@@ -23,14 +23,14 @@ class CustomLogger:
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
 
-    def log_info(self, message):
+    def log_info(self, message) -> None:
         self.logger.info(message)
 
-    def log_warning(self, message):
+    def log_warning(self, message) -> None:
         self.logger.warning(message)
 
-    def log_debug(self, message):
+    def log_debug(self, message) -> None:
         self.logger.debug(message)
 
-    def log_error(self, message):
+    def log_error(self, message)-> None:
         self.logger.error(message)

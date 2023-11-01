@@ -21,9 +21,9 @@ class HttpSession:
     def send_request(request_type: RequestTypes, endpoint: str, header_val: dict, payload=None, *args, **kwargs):
         try:
             response: Response = request_type(endpoint, data=payload, headers=header_val, verify=False)
-            logger.log_debug("Status code returned by the api : ".format(response.status_code))
-            logger.log_debug("Response returned by the api : ".format(response.json()))
-            return response.json()
+            logger.log_info("Status code returned by the api : "+ str(response.status_code))
+            logger.log_debug(response.json())
+            return response.json(), response.status_code
 
         except RequestException as e:
             logger.log_error("While calling the endpoint encountered as error: ".format(request_type, e))
@@ -39,9 +39,9 @@ class HttpSession:
             logger.log_error("While calling the endpoint encountered as error: ".format(RequestTypes, e))
 
     @staticmethod
-    def token(endPoint, header, payload):
-        response = HttpSession.send_request(RequestTypes.POST, endPoint, header,
-                                            payload)
+    def token(end_point, header, payload) -> dict[str, str]:
+        response = HttpSession.send_request(RequestTypes.POST, end_point, header,
+                                            payload)[0]
         token: str = response['access_token']
         token_val: str = "".join('Bearer ' + token)
         logger.log_info("Token created: " + token_val)

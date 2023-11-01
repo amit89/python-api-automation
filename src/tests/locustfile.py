@@ -6,6 +6,9 @@ from src.core.request import HttpSession
 from src.config.payload import get_payload
 from src.config.endpoints import EndPoints
 from src.config.constants import Constants
+from src.core.logger import CustomLogger
+
+logger = CustomLogger("Performance Test")
 
 locust.stats.CSV_STATS_INTERVAL_SEC = 5
 locust.stats.CSV_STATS_FLUSH_INTERVAL_SEC = 60
@@ -21,18 +24,26 @@ class BackOfficeServices(SequentialTaskSet):
     def on_start(self):
         self.client.verify = False
         self.token = HttpSession.token(EndPoints.token_url, Constants.token_header(),
-                                       Constants.token_payload())
+                                       Constants.empty_payload())
         self.payload = get_payload()
+        logger.log_info(self.payload)
+
+    @task
+    def create_users(self):
+        response = self.client.post("/api/users", headers=Constants.default_header(), json=json.loads(self.payload))
+        logger.log_info(response)
+
+    @task
+    def get_users(self):
+        self.client.get("/api/users?page=2", headers=Constants.default_header())
 
     @task
     def get_rehost(self):
-        #reponse = self.client.post("api/users", json=self.payload, name=f"ENDPOINT NAME")
-        response = self.client.post(EndPoints.token_url, headers= Constants.token_header(), json= Constants.token_payload())
-        print(response.status_code)
+        self.client.get("/backoffice/v1/reports/rehost?startTime=2023-06-01T00:00:00Z&endTime=2023-07-01T00:00:00Z&rehostsLimit=3", headers=Constants.rehost_header())
 
 
 class LoadTesting(HttpUser):
-    #host = "https://reqres.in/"
-    hots = "https://id.trimble.com"
+    host = EndPoints.dummy_host
+    host = EndPoints.host
     tasks = [BackOfficeServices]
     wait_time = between(2, 5)
